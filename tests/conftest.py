@@ -14,6 +14,8 @@ def client():
     yield client
 
 
+# this fixture is not necessary for running tests in this repo
+# Although I will keep it here for future references
 @pytest.fixture
 def db():
     """

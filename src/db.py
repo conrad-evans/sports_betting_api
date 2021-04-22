@@ -1,6 +1,5 @@
 import sqlite3
-# from src.schema import SCHEMA
-from schema import SCHEMA, TEST
+from src.schema import SCHEMA
 
 
 class DataBase:
@@ -44,12 +43,3 @@ class DataBase:
 
     def __del__(self):
         self.conn.close()
-
-
-if __name__ == "__main__":
-    data = {"league": "premier league",
-            "home_team": "arsenal", "away_team": "liverpool", "home_team_win_odds": 3.50, "away_team_win_odds": 2.00, "draw_odds": 4.25, "game_date": "2020-21-04"}
-    # db = DataBase('test.db')
-    db = DataBase(TEST)
-    print(db.create(data))
-    print(db.read())
