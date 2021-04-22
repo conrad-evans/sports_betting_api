@@ -1,7 +1,6 @@
 from typing import Dict, List
 import sqlite3
-# from src.schema import SCHEMA
-from schema import SCHEMA
+from src.schema import SCHEMA
 
 
 class DataBase:
@@ -72,7 +71,13 @@ class DataBase:
             `obj` if successfully updated else `None`
         """
         try:
-            self.cursor.execute()
+            self.cursor.execute(
+                """
+                UPDATE sportsbetting 
+                SET league = ?, home_team = ?, away_team = ?, home_team_win_odds = ?, away_team_win_odds = ?, draw_odds = ?, game_date = ?
+                WHERE 
+                """
+            )
             self.conn.commit()
             return new_data
         except Exception as e:
@@ -92,7 +97,7 @@ class DataBase:
         try:
             self.cursor.execute(
                 """DELETE FROM sportsbetting WHERE league = ?, home_team = ?, away_team = ?, game_date = ?""",
-                (data["league"], data["home_team"], data["away_team"], data["game_date"]))
+                (data["league"], data["home_team"], data["away_team"], data["game_date"],))
             self.conn.commit()
             return data
         except Exception as e:

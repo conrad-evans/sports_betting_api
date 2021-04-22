@@ -15,6 +15,8 @@ test_data_two = {"league": "la liga",
 class Test_DataBase:
     def test_init(self):
         db = DataBase(test_db)
+
+        # Assertions
         assert isinstance(db.cursor, sqlite3.Cursor)
         assert len(list(db.cursor.execute(
             """SELECT * FROM sportsbetting"""))) == 0
@@ -22,6 +24,8 @@ class Test_DataBase:
     def test_createOdds(self):
         db = DataBase(test_db)
         db.create(test_data)
+
+        # Assertions
         assert len(list(db.cursor.execute(
             """SELECT * FROM sportsbetting"""))) == 1
         assert list(db.cursor.execute("""SELECT * FROM sportsbetting"""))[0] == (
@@ -32,6 +36,8 @@ class Test_DataBase:
         db.create(test_data)
         db.create(test_data_two)
         result = db.read()
+
+        # Assertions
         assert isinstance(result, list)
         assert len(result) == 2
         assert result[1] == (
@@ -55,8 +61,7 @@ class Test_DataBase:
         db.delete(data_to_delete)
 
         # assertion
-        assert len(db.read()) == 1
-        # assert len(list(db.cursor.execute(
-            # """SELECT * FROM sportsbetting"""))) == 1
+        assert len(list(db.cursor.execute(
+            """SELECT * FROM sportsbetting"""))) == 1
         assert list(db.cursor.execute("""SELECT * FROM sportsbetting"""))[0] == (
             1, "premier league", "arsenal", "liverpool", 3.5, 2.0, 4.25, "2020-21-04")
