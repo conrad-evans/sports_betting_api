@@ -19,21 +19,17 @@ def createOdds():
     """
     data = request.get_json()
     validation = Validation(data)
-    validation.check("league")
-    validation.check("home_team")
-    validation.check("away_team")
-    validation.check("home_team_win_odds")
-    validation.check("away_team_win_odds")
-    validation.check("draw_odds")
-    validation.check("game_date")
+    [validation.check("league"), validation.check("home_team"), validation.check("away_team"), validation.check(
+        "home_team_win_odds"), validation.check("away_team_win_odds"), validation.check("draw_odds"), validation.check("game_date")]
     if validation.errors():
         return jsonResponse(status_code=400, error=validation.errors())
 
     db = DataBase(DB)
-    if db.create(data) is None:
+    data_created = db.create(data)
+    if data_created is None:
         return jsonResponse(status_code=500, error="something went wrong")
 
-    return jsonResponse(status_code=201, data=data)
+    return jsonResponse(status_code=201, data=data_created)
 
 
 @sports.route('/read', methods=['GET'])
@@ -44,6 +40,7 @@ def readOdds():
     """
     db = DataBase(DB)
     data = db.read()
+    print(data)
     if data is None:
         return jsonResponse(status_code=500, error="something went wrong")
 
@@ -61,10 +58,8 @@ def updateOdds():
 def deleteOdds():
     data = request.get_json()
     validation = Validation(data)
-    validation.check("league")
-    validation.check("home_team")
-    validation.check("away_team")
-    validation.check("game_date")
+    [validation.check("league"), validation.check("home_team"), validation.check(
+        "away_team"), validation.check("game_date")]
     if validation.errors():
         return jsonResponse(status_code=400, error=validation.errors())
 
