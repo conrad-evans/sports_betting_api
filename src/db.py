@@ -75,8 +75,11 @@ class DataBase:
                 """
                 UPDATE sportsbetting 
                 SET league = ?, home_team = ?, away_team = ?, home_team_win_odds = ?, away_team_win_odds = ?, draw_odds = ?, game_date = ?
-                WHERE 
-                """
+                WHERE league = ? AND home_team = ? AND away_team = ? AND home_team_win_odds = ? AND away_team_win_odds = ? AND draw_odds = ? AND game_date = ?
+                """, (new_data['league'], new_data['home_team'], new_data['away_team'], new_data['home_team_win_odds'], new_data['away_team_win_odds'], new_data['draw_odds'],
+                      new_data['game_date'], old_data['league'], old_data['home_team'], old_data[
+                          'away_team'], old_data['home_team_win_odds'], old_data['away_team_win_odds'],
+                      old_data['draw_odds'], old_data['game_date'])
             )
             self.conn.commit()
             return new_data
@@ -96,7 +99,8 @@ class DataBase:
         """
         try:
             self.cursor.execute(
-                """DELETE FROM sportsbetting WHERE league = ?, home_team = ?, away_team = ?, game_date = ?""",
+                """DELETE FROM sportsbetting 
+                WHERE league = ? AND home_team = ? AND away_team = ? AND game_date = ?""",
                 (data["league"], data["home_team"], data["away_team"], data["game_date"],))
             self.conn.commit()
             return data

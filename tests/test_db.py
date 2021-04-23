@@ -1,7 +1,4 @@
 import sqlite3
-from tests.test_factory import test_config
-
-from werkzeug import test
 from src.db import DataBase
 
 test_db = ":memory:"
@@ -44,7 +41,15 @@ class Test_DataBase:
             2, "la liga", "real madrid", "barcelona", 3.5, 2.0, 4.25, "2020-21-04")
 
     def test_updateOdds(self):
-        pass
+        db = DataBase(test_db)
+        db.create(test_data)
+        db.update(test_data, test_data_two)
+        result = db.read()
+
+        # Assertions
+        assert len(result) == 1
+        assert result[0] == (
+            1, "la liga", "real madrid", "barcelona", 3.5, 2.0, 4.25, "2020-21-04")
 
     def test_deleteOdds(self):
         # test data
