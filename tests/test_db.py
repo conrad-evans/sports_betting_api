@@ -8,6 +8,8 @@ test_data = {"league": "premier league",
 test_data_two = {"league": "la liga",
                  "home_team": "real madrid", "away_team": "barcelona", "home_team_win_odds": 3.50, "away_team_win_odds": 2.00, "draw_odds": 4.25, "game_date": "2020-21-04"}
 
+invalid_data = {"liga": "league", "homeTeam": "team"}
+
 
 class Test_DataBase:
     def test_init(self):
@@ -22,11 +24,14 @@ class Test_DataBase:
         db = DataBase(test_db)
         db.create(test_data)
 
+        db_two = DataBase(test_db)
+
         # Assertions
         assert len(list(db.cursor.execute(
             """SELECT * FROM sportsbetting"""))) == 1
         assert list(db.cursor.execute("""SELECT * FROM sportsbetting"""))[0] == (
             1, "premier league", "arsenal", "liverpool", 3.5, 2.0, 4.25, "2020-21-04")
+        assert db_two.create(invalid_data) is None
 
     def test_readOdds(self):
         db = DataBase(test_db)
