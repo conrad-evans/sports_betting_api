@@ -8,7 +8,9 @@ api_url = "/api/sportsbetting"
 sports = Blueprint('sports', __name__, url_prefix=api_url)
 
 # use this db for now
-DB = 'test.db'
+# DB = 'test.db'
+
+db = DataBase.getInstance(re_init=False)
 
 
 @sports.route('/create', methods=['POST'])
@@ -24,7 +26,6 @@ def createOdds():
     if validation.errors():
         return jsonResponse(status_code=400, error=validation.errors())
 
-    db = DataBase(DB)
     data_created = db.create(data)
     if data_created is None:
         return jsonResponse(status_code=500, error="something went wrong")
@@ -38,7 +39,6 @@ def readOdds():
     """
     Returns all entries in the database
     """
-    db = DataBase(DB)
     data = db.read()
     print(data)
     if data is None:
@@ -63,7 +63,6 @@ def deleteOdds():
     if validation.errors():
         return jsonResponse(status_code=400, error=validation.errors())
 
-    db = DataBase(DB)
     data = db.delete()
     if data is None:
         return jsonResponse(status_code=500, error="something went wrong")
