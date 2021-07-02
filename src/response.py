@@ -2,7 +2,7 @@ import json
 from typing import Dict
 
 
-def jsonResponse(status_code: int = 200, data: Dict = None, error: Dict = None) -> Dict:
+def jsonResponse(status_code: int = 200, data: dict = None, error: dict = None) -> dict:
     """
     coverts dictionary obj into json
     Args:

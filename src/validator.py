@@ -1,8 +1,8 @@
 import re
-from typing import Dict
+from typing import Dict, Set
 
 
-class Validation:
+class Validator:
     def __init__(self, data: Dict) -> None:
         self.data = data
         self.errors_dict = dict()
@@ -15,6 +15,21 @@ class Validation:
             `bool` -> `True` if value exists in dictionary else `False`
         """
         return True if self.value in self.errors_dict else False
+
+    def checkAll(self, values: list):
+        """
+        Iterates through a list to check if all values are in the data provided
+
+        Args:
+            `values: (list) -> Keys in data object passed in class initialization
+
+        Returns:
+            `Validation` instance of the validation class
+        """
+        values = set(values)
+        for value in values:
+            self.check(value)
+        return self
 
     def check(self, value: str, message: str = None):
         """

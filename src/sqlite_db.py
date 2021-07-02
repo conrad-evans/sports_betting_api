@@ -1,124 +1,67 @@
-from typing import Dict, List
+import os
 import sqlite3
-from src.schema import SCHEMA
-
+import sys
 instance = None
 
 
-class SqliteDataBase:
-    def __init__(self, db_name: str) -> None:
-        """
-        creates an instance of the DataBase class
+class SqlDatabase:
+    def __init__(self, config: dict = None) -> None:
+        self.config = config
+        self.setUp()
 
-        Args:
-            `db_name: (str)` -> db name to be created 
+    def setUp(self):
+        if type(self.config) != dict:
+            sys.exit(1)
+        if self.config.get('db_name'):
+            if self.config['db_name'] == ':memory:':
+                self._initializeDatabase(self.config)
+            elif os.path.exists(self.config['db_name']):
+                self.conn = sqlite3.connect(self.config['db_name'])
+            else:
+                self._initializeDatabase(self.config)
 
-        Example:
-            `db = DataBase('test.db')`
-
-        Returns:
-            `None`
-        """
-        self.conn = sqlite3.connect(db_name)
-        self.cursor = self.conn.cursor()
-        self.cursor.execute(SCHEMA)
-
-    def create(self, data: Dict) -> Dict:
-        """
-        creates an entry in the database
-
-        Args:
-            `param1: (obj)` -> with specific keys and data types for the db
-
-        Returns:
-            `obj` if successful else returns `None`
-        """
+    def _readFile(self, file):
         try:
-            self.cursor.execute(
-                """
-                INSERT INTO sportsbetting 
-                (league, home_team, away_team, home_team_win_odds, away_team_win_odds, draw_odds, game_date)
-                 VALUES (?, ?, ?, ?, ?, ?, ?)
-                 """,
-                (data['league'], data['home_team'], data['away_team'], data['home_team_win_odds'], data['away_team_win_odds'], data['draw_odds'], data['game_date']))
-            self.conn.commit()
-            return data
+            with open(file) as f:
+                return f.read()
         except Exception as e:
             print(e)
             return None
 
-    def read(self) -> List:
-        """
-        Gets all entries in the DataBase
+    def _initializeDatabase(self, config):
+        if config.get('schema') is None or not os.path.exists(config['schema']):
+            print("schema missing")
+            sys.exit(1)
+        schema = self._readFile(config['schema'])
+        if schema:
+            print('first')
+            self.conn = sqlite3.connect(config['db_name'])
+            print('second')
+            self.conn.cursor().executescript(schema)
 
-        Returns:
-            `list` if successfull else `None`
-        """
+    def readAll(self, db_name):
         try:
-            data = self.conn.execute("""SELECT * FROM sportsbetting""")
+            data = self.conn.execute("""SELECT * FROM {}""".format(db_name))
             self.conn.commit()
             return list(data)
         except Exception as e:
             print(e)
             return None
 
-    def update(self, old_data: Dict, new_data: Dict) -> Dict:
-        """
-        updates data from the database if data in the database
-
-        Args:
-            `param1: (obj)` -> with specific keys and values with the right data type
-
-        Returns:
-            `obj` if successfully updated else `None`
-        """
+    def query(self, sql_statement, params=None):
         try:
-            self.cursor.execute(
-                """
-                UPDATE sportsbetting 
-                SET league = ?, home_team = ?, away_team = ?, home_team_win_odds = ?, away_team_win_odds = ?, draw_odds = ?, game_date = ?
-                WHERE league = ? AND home_team = ? AND away_team = ? AND home_team_win_odds = ? AND away_team_win_odds = ? AND draw_odds = ? AND game_date = ?
-                """, (new_data['league'], new_data['home_team'], new_data['away_team'], new_data['home_team_win_odds'], new_data['away_team_win_odds'], new_data['draw_odds'],
-                      new_data['game_date'], old_data['league'], old_data['home_team'], old_data[
-                          'away_team'], old_data['home_team_win_odds'], old_data['away_team_win_odds'],
-                      old_data['draw_odds'], old_data['game_date'])
-            )
-            self.conn.commit()
-            return new_data
-        except Exception as e:
-            print(e)
-            return None
-
-    def delete(self, data: Dict) -> Dict:
-        """
-        deletes data from the database if data in the database
-
-        Args:
-            `data: (obj)` -> with specified keys
-
-        Returns:
-            `obj` if successfully deleted else `None`
-        """
-        try:
-            self.cursor.execute(
-                """DELETE FROM sportsbetting 
-                WHERE league = ? AND home_team = ? AND away_team = ? AND game_date = ?""",
-                (data["league"], data["home_team"], data["away_team"], data["game_date"],))
-            self.conn.commit()
+            if params is None:
+                data = self.conn.cursor().execute(sql_statement)
+            else:
+                params = tuple(params)
+                data = self.conn.cursor().execute(sql_statement, params)
             return data
         except Exception as e:
             print(e)
             return None
 
-    def getInstance(db_name, re_init=False):
+    def getInstance(config: dict = None, re_init=False):
         global instance
-        if instance is None and re_init:
-            return SqliteDataBase(db_name)
+        if instance is None or re_init is True:
+            return SqlDatabase(config)
         return instance
-
-
-    def __del__(self) -> None:
-        """
-        closes the database instance
-        """
-        self.conn.close()

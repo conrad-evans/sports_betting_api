@@ -1,16 +1,11 @@
+from flask import Blueprint, request
+from src.validator import Validator
 from src.response import jsonResponse
-from src.middleware import tokenRequired
-from flask import Blueprint, json, request
-from src.validation import Validation
-from src.db import DataBase
+from src.database import DataBase
+from src.sqlite_db import SqlDatabase
 
 api_url = "/api/sportsbetting"
 sports = Blueprint('sports', __name__, url_prefix=api_url)
-
-# use this db for now
-# DB = 'test.db'
-
-db = DataBase.getInstance(re_init=False)
 
 
 @sports.route('/create', methods=['POST'])
@@ -20,11 +15,11 @@ def createOdds():
     creates an entry in the db
     """
     data = request.get_json()
-    validation = Validation(data)
-    [validation.check("league"), validation.check("home_team"), validation.check("away_team"), validation.check(
-        "home_team_win_odds"), validation.check("away_team_win_odds"), validation.check("draw_odds"), validation.check("game_date")]
-    if validation.errors():
-        return jsonResponse(status_code=400, error=validation.errors())
+    validator = Validator(data)
+    validator.checkAll(["league", "home_team", "away_team",
+                       "home_team_win_odds", "away_team_win_odds", "draw_odds", "game_date"])
+    if validator.errors():
+        return jsonResponse(status_code=400, error=validator.errors())
 
     data_created = db.create(data)
     if data_created is None:

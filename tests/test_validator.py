@@ -1,4 +1,4 @@
-from src.validation import Validation
+from src.validator import Validator
 
 
 test_data_one = {"email": "test@mail.com", "username": "test"}
@@ -8,7 +8,7 @@ test_data_three = {"email": "", "password": ""}
 
 class Test_Validation:
     def test_init(self):
-        validation = Validation(test_data_one)
+        validation = Validator(test_data_one)
 
         # Assertions
         assert validation.errors_dict == {}
@@ -19,9 +19,9 @@ class Test_Validation:
         # test data
         message = "No valid email provided"
 
-        validation_one = Validation(test_data_one)
-        validation_two = Validation(test_data_two)
-        validation_three = Validation(test_data_three)
+        validation_one = Validator(test_data_one)
+        validation_two = Validator(test_data_two)
+        validation_three = Validator(test_data_three)
 
         validation_one.check("email")
         validation_two.check("username")
@@ -33,8 +33,8 @@ class Test_Validation:
         assert validation_three.errors_dict == {"email": message}
 
     def test_isEmail(self):
-        validation_one = Validation(test_data_one)
-        validation_two = Validation(test_data_two)
+        validation_one = Validator(test_data_one)
+        validation_two = Validator(test_data_two)
 
         validation_one.check("email")
         validation_one.isEmail()
@@ -49,11 +49,11 @@ class Test_Validation:
         assert len(validation_two.errors_dict) == 1
 
     def test_length(self):
-        validation_one = Validation(test_data_one)
+        validation_one = Validator(test_data_one)
         validation_one.check("username")
         validation_one.length(minimum=5, maximum=8)
 
-        validation_two = Validation(test_data_two)
+        validation_two = Validator(test_data_two)
         validation_two.check("password")
         validation_two.length(minimum=8, maximum=12)
 
@@ -65,10 +65,10 @@ class Test_Validation:
         assert len(validation_two.errors_dict) == 0
 
     def test_errors(self):
-        validation_one = Validation(test_data_one)
+        validation_one = Validator(test_data_one)
         validation_one.check('email').isEmail()
 
-        validation_two = Validation(test_data_two)
+        validation_two = Validator(test_data_two)
         validation_two.check('email').isEmail()
 
         # Assertions

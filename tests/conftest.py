@@ -1,7 +1,5 @@
-import sqlite3
 import pytest
 from src import create_app
-from src.schema import SCHEMA
 
 
 @pytest.fixture
@@ -16,13 +14,13 @@ def client():
 
 # this fixture is not necessary for running tests in this repo
 # Although I will keep it here for future references
-@pytest.fixture
-def db():
-    """
-    fixure to setup in memory database for testing
-    """
-    conn = sqlite3.connect(':memory:')
-    cursor = conn.cursor()
-    cursor.execute(SCHEMA)
+# @pytest.fixture
+# def db():
+#     """
+#     fixure to setup in memory database for testing
+#     """
+#     conn = sqlite3.connect(':memory:')
+#     cursor = conn.cursor()
+#     cursor.execute(SCHEMA)
 
-    yield conn
+#     yield conn
