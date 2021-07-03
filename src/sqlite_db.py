@@ -34,19 +34,12 @@ class SqlDatabase:
             sys.exit(1)
         schema = self._readFile(config['schema'])
         if schema:
-            print('first')
-            self.conn = sqlite3.connect(config['db_name'])
-            print('second')
-            self.conn.cursor().executescript(schema)
-
-    def readAll(self, db_name):
-        try:
-            data = self.conn.execute("""SELECT * FROM {}""".format(db_name))
-            self.conn.commit()
-            return list(data)
-        except Exception as e:
-            print(e)
-            return None
+            try:
+                self.conn = sqlite3.connect(config['db_name'])
+                self.conn.cursor().executescript(schema)
+            except Exception as e:
+                print(e)
+                sys.exit(1)
 
     def query(self, sql_statement, params=None):
         try:
@@ -54,14 +47,24 @@ class SqlDatabase:
                 data = self.conn.cursor().execute(sql_statement)
             else:
                 params = tuple(params)
+                print(params)
                 data = self.conn.cursor().execute(sql_statement, params)
             return data
         except Exception as e:
             print(e)
-            return None
+            return e
 
     def getInstance(config: dict = None, re_init=False):
         global instance
         if instance is None or re_init is True:
             return SqlDatabase(config)
         return instance
+
+
+if __name__ == '__main__':
+    test_config = {'db_name': ':memory:', 'schema': './tests/test.sql'}
+    sql = SqlDatabase.getInstance(config=test_config, re_init=True)
+    data = ["la liga", "madrid", "atletico", 1.95, 2.80, 4.00, "7/3/2021"]
+    sql.query("INSERT INTO odds (league, home_team, away_team, home_team_win_odds, away_team_win_odds, draw_odds, game_date) VALUES (?, ?, ?, ?, ?, ?, ?)", params=data)
+    print(list(sql.query("SELECT * FROM odds")))
+

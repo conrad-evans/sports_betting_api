@@ -18,8 +18,8 @@ class DataBase:
     def delete(self, data):
         return self.provider.delete(data)
 
-    def query(self, query):
-        return self.provider.query(query)
+    def query(self, query, params=None):
+        return self.provider.query(query, params)
 
     @staticmethod
     def getInstance(provider=None, re_init=False):
