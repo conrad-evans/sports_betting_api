@@ -47,7 +47,6 @@ class SqlDatabase:
                 data = self.conn.cursor().execute(sql_statement)
             else:
                 params = tuple(params)
-                print(params)
                 data = self.conn.cursor().execute(sql_statement, params)
             return data
         except Exception as e:

@@ -1,4 +1,4 @@
-import datetime
+from src.queries import CREATE_ODDS, READ_ALL_ODDS
 from src.database import DataBase
 from src.sqlite_db import SqlDatabase
 
@@ -9,23 +9,24 @@ db = DataBase.getInstance(provider=sql, re_init=True)
 
 class Test_SqlDatabase:
     def test_query(self):
-        # test data has no odds
-        data = ["la liga", "madrid", "atletico", 1.8, 2.8, 4.00, "07/03/2021"]
-        result_one = db.query("SELECT * FROM odds")
+        # prepare
+        data = ['la liga', 'madrid', 'barcelona', 2.30, 2.50, 3, '2021-07-03']
+        data_two = ['premier league', 'chelsea',
+                    'arsenal', 1.5, 2.95, 4, '2021-05-03']
 
-        new = db.query("""
-        INSERT INTO odds
-        (league, home_team, away_team, home_team_win_odds, away_team_win_odds, draw_odds, game_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?)""", params=data)
-        db.query("""
-        INSERT INTO odds
-        (league, home_team, away_team, home_team_win_odds, away_team_win_odds, draw_odds, game_date)
-        VALUES (?, ?, ?, ?, ?, ?, ?)""", params=data)
+        # before data inserted
+        result_one = db.query(READ_ALL_ODDS)
 
-        result_two = db.query("SELECT * FROM odds")
-        print(new)
-        print(list(result_two))
-        print(result_two)
+        # insert data into db
+        db.query(CREATE_ODDS, data)
+        db.query(CREATE_ODDS, data_two)
+
+        # query db
+        result_two = db.query(READ_ALL_ODDS)
+
+        # assertions
         assert len(list(result_one)) == 0
-        assert(list(result_two)) == [('la liga', 'madrid', 'atletico', 1.8, 2.8, 4.00,
-                                      '07/03/2021'), ('la liga', 'madrid', 'atletico', 1.8, 2.8, 4.00, '07/03/2021')]
+        assert len(list(result_two)) == 2
+        results = list(result_two)
+        assert list(db.query(READ_ALL_ODDS))[0] == tuple(
+            [1, 'la liga', 'madrid', 'barcelona', 2.30, 2.50, 3.0, '2021-07-03'])

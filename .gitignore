@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 sportsbettingapi*.json
+sportsbetting.db
 
 
 # C extensions

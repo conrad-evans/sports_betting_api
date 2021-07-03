@@ -15,10 +15,14 @@ class Test_DataBase:
 
         # before data inserted
         result_one = db.query(READ_ALL_ODDS)
-        assert len(list(result_one)) == 0
 
+        # insert data into db
         db.query(CREATE_ODDS, data)
 
+        # query db
         result_two = db.query(READ_ALL_ODDS)
+
+        # assertions
+        assert len(list(result_one)) == 0
         assert len(list(result_two)) == 1
         assert list(db.query(READ_ALL_ODDS)) == [tuple([1, 'la liga', 'madrid', 'barcelona', 2.30, 2.50, 3.0, '2021-0703'])]
