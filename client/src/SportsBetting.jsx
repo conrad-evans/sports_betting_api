@@ -11,8 +11,8 @@ function SportsBetting() {
 
   const fetchData = async () => {
     try {
-      const data = await axios.get("/api/api/odds/");
-      setData((preData) => data);
+      const data = await axios.get("/api/odds");
+      setData((preData) => data.data.data);
     } catch (error) {
       console.log(error);
     }
