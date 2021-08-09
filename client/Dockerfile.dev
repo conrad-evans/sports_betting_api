@@ -1,0 +1,11 @@
+FROM node:alpine
+
+WORKDIR /app
+
+COPY ./package.json .
+COPY ./yarn.lock .
+RUN yarn install
+# RUN npm config set unsafe-perm true
+COPY . .
+
+CMD ["npm", "start"]
