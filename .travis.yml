@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - dokcer build -t conradmugabe/sports-betting-client -f ./client/Dockerfile.dev ./client
+  - docker build -t conradmugabe/sports-betting-client -f ./client/Dockerfile.dev ./client
 
 script:
   - docker run -e CI=true conradmugabe/sports-betting npm run test
@@ -12,7 +12,9 @@ script:
 after_success:
   - docker build -t conradmugabe/sports-betting-client ./client
   - docker build -t conradmugabe/sports-betting-nginx ./nginx
+  - docker build -t conradmugabe/odds ./odds
 
   # push docker images to docker hub
   - docker push conradmugabe/sports-betting-client
   - docker push conradmugabe/sports-betting-nginx
+  - docker push conradmugabe/odds
