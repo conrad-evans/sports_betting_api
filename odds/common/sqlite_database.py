@@ -163,7 +163,8 @@ class SqliteDatabse:
 
     def setUp(self):
         try:
-            self.database = sqlite3.connect(self.database_file)
+            self.database = sqlite3.connect(self.database_file, check_same_thread=False)
+            self.database = self.database.cursor()
             print('connected to database')
         except Exception as err:
             print('failed to connect to database')
