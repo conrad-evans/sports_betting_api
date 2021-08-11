@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, jsonify, request
+from common import Validation
 
 
 class Odds:
@@ -13,14 +14,27 @@ class Odds:
             "/odds/create", methods=["GET"], view_func=self.createOdds
         )
         self.web_app.add_url_rule(
-            "/odds/read", methods=["GET"], view_func=self.readOdds
+            "/odds/read", methods=["POST"], view_func=self.readOdds
         )
 
     def createOdds(self):
-        return "Create Odds"
+        return jsonify({"data": "Create Odds"})
 
     def readOdds(self):
-        return "Read Odds"
+        data = request.get_json()
+        validation = Validation(data)
+        expected_data = ["league", "home_team"]
+        validation.checkAll(expected_data)
+        if validation.errors():
+            return jsonify({"data": validation.errors()})
+
+        if len(data) != len(expected_data):
+            # do some sort of mapping to data
+            pass
+        
+
+
+        return jsonify({"data": data})
 
     @staticmethod
     def getInstance(re_init=False):

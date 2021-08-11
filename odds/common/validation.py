@@ -2,8 +2,6 @@ import re
 
 
 class Validation:
-    """Validation Class for validating inputs, input types"""
-
     def __init__(self, data: dict) -> None:
         self.data = data
         self.errors_dict = dict()
@@ -17,6 +15,21 @@ class Validation:
         """
         return True if self.value in self.errors_dict else False
 
+    def checkAll(self, values: list):
+        """
+        Iterates through a list to check if all values are in the data provided
+
+        Args:
+            `values: (list) -> Keys in data object passed in class initialization
+
+        Returns:
+            `Validation` instance of the validation class
+        """
+        values = set(values)
+        for value in values:
+            self.check(value)
+        return self
+
     def check(self, value: str, message: str = None):
         """
         checks if the value supplied has a value
@@ -28,7 +41,7 @@ class Validation:
             `bool` -> `True` if value exists for the key else `False`
         """
         self.value = value
-        if (type(self.data) != dict) or (not self.data.get(self.value)):
+        if not self.data.get(self.value):
             if message:
                 self.errors_dict[self.value] = message
             else:
