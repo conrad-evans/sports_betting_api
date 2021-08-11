@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request
-from common import Validation
+from common import Validation, Database, SqliteDatabse
+
+sqlite_database = SqliteDatabse.getInstance(database_name)
+database = Database.getInstance(sqlite_database)
 
 
 class Odds:
@@ -18,7 +21,19 @@ class Odds:
         )
 
     def createOdds(self):
-        return jsonify({"data": "Create Odds"})
+        data = request.get_json()
+        validation = Validation(data)
+        expected_data = ["league", "home_team"]
+        validation.checkAll(expected_data)
+        if validation.errors():
+            return jsonify({"data": validation.errors()})
+
+        if len(data) != len(expected_data):
+            # do some sort of mapping to data
+            pass
+
+
+        return jsonify({"data": data})
 
     def readOdds(self):
         data = request.get_json()
@@ -31,7 +46,6 @@ class Odds:
         if len(data) != len(expected_data):
             # do some sort of mapping to data
             pass
-        
 
 
         return jsonify({"data": data})
