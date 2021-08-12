@@ -5,6 +5,7 @@ import sqlite3
 
 class SqliteDatabse:
     """Sqlite Database Class"""
+
     _instance = None
 
     def __init__(self, database_file: str) -> None:
@@ -62,7 +63,7 @@ class SqliteDatabse:
 
         Returns:
             `bool`, `str|None`, `str|None`: Returns `True`, `None`, `str` if successful
-            else `False`, `str`, `None` 
+            else `False`, `str`, `None`
 
         >>> create("Persons/123", {"name":"John","age":30})
         """
@@ -98,9 +99,11 @@ class SqliteDatabse:
         >>> read("users/user_id")
         >>> read("users/8343424")
         """
-        nests = location.split('/')
+        nests = location.split("/")
         if len(nests) != 2:
-            return Exception("Error: location string should be in the form of 'table_name/id'")
+            return Exception(
+                "Error: location string should be in the form of 'table_name/id'"
+            )
 
         sql = f"SELECT * FROM {nests[0]} WHERE id = ?"
         data = self.database.execute(sql, [nests[1]])
@@ -117,10 +120,9 @@ class SqliteDatabse:
             `bool`, `str|None`, `str|None`: Returns `True`, `None`, `str` if successful
             else returns `bool`, `str`, `None` if unsuccessful
 
-            >>> succeeded, reason, data
-
         Example:
             >>> update("Persons/123", {"name":"John","age":30})
+            >>> True, None, "123"
         """
         succeeded, reason, nests = self._checkIfTableAndIdProvided(location)
         if not succeeded:
@@ -144,7 +146,7 @@ class SqliteDatabse:
         Returns:
             `bool`, `str|None`, `str|None`: Returns `True`, `None`, `str` if successful
             else returns `False`, `str`, `None`
-            
+
         Examples:
             >>> delete("Persons/123")
         """
@@ -165,9 +167,9 @@ class SqliteDatabse:
         try:
             self.database = sqlite3.connect(self.database_file, check_same_thread=False)
             self.database = self.database.cursor()
-            print('connected to database')
+            print("connected to database")
         except Exception as err:
-            print('failed to connect to database')
+            print("failed to connect to database")
             print(err)
 
     @staticmethod
@@ -177,16 +179,22 @@ class SqliteDatabse:
 
     @staticmethod
     def _checkIfTableAndIdProvided(location):
-        nests = location.split('/')
+        nests = location.split("/")
         if len(nests) != 2:
-            return False, Exception("Error: location string should be in the form of 'table_name/id'"), None
+            return (
+                False,
+                Exception(
+                    "Error: location string should be in the form of 'table_name/id'"
+                ),
+                None,
+            )
         return True, None, nests
 
-    @ staticmethod
+    @staticmethod
     def _filePathExists(file_path: str):
         return os.path.exists(file_path)
 
-    @ staticmethod
+    @staticmethod
     def _readFile(file_path: str):
         try:
             with open(file_path) as f:
@@ -195,7 +203,7 @@ class SqliteDatabse:
             print(err)
             return None
 
-    @ staticmethod
+    @staticmethod
     def getInstance(database_file: str, re_init=False):
         if SqliteDatabse._instance is None or re_init:
             SqliteDatabse._instance = SqliteDatabse(database_file)

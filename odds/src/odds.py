@@ -25,7 +25,12 @@ class Odds:
         self.web_app.add_url_rule(
             f"{Odds.api}/read", methods=["GET"], view_func=self.readOdds
         )
-        self.web_app.add_url_rule(f"{Odds.api}/update")
+        self.web_app.add_url_rule(
+            f"{Odds.api}/update", methods=["PUT"], view_func=self.updateOdds
+        )
+        self.web_app.add_url_rule(
+            f"{Odds.api}/delete", methods=["DELETE"], view_func=self.deleteOdds
+        )
 
     def createOdds(self):
         data = request.get_json()
@@ -86,12 +91,39 @@ class Odds:
     def updateOdds(self):
         data = request.get_json()
         validation = Validation(data)
+        expected_data = [
+            "id" "league",
+            "home_team",
+            "away_team",
+            "home_team_win_odds",
+            "away_team_win_odds",
+            "draw_odds",
+            "game_date",
+        ]
+        validation.checkAll(expected_data)
+        if validation.errors():
+            return jsonify({"data": validation.errors()})
+
+        uid = data["id"]
+        path = Odds.table + "/" + uid
+        succeeded, _, data = database.update(path, data)
+
+        return jsonify({"data": data, "succeeded": succeeded})
         pass
 
     def deleteOdds(self):
         data = request.get_json()
         validation = Validation(data)
-        pass
+        expected_data = ["league", "home_team", "away_team", "game_date"]
+        validation.checkAll(expected_data)
+        if validation.errors():
+            return jsonify({"data": validation.errors()})
+
+        uid = data["id"]
+        path = Odds.table + "/" + uid
+        succeeded, _, data = database.delete(path)
+
+        return jsonify({"data": data, "succeeded": succeeded})
 
     @staticmethod
     def getInstance(re_init=False):
