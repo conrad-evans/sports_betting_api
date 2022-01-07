@@ -1,8 +1,7 @@
 import re
 
-class Validation:
-    """Validation Class for validating inputs, input types"""
 
+class Validation:
     def __init__(self, data: dict) -> None:
         self.data = data
         self.errors_dict = dict()
@@ -42,7 +41,7 @@ class Validation:
             `bool` -> `True` if value exists for the key else `False`
         """
         self.value = value
-        if (type(self.data) != dict) or (not self.data.get(self.value)):
+        if not self.data.get(self.value):
             if message:
                 self.errors_dict[self.value] = message
             else:
